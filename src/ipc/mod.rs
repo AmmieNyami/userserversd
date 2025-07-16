@@ -1,5 +1,9 @@
 use std::collections::HashMap;
+use std::fs;
 use std::io::{self, BufRead, BufReader, Read, Write};
+use std::path::Path;
+
+use nix::unistd;
 
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
@@ -30,8 +34,22 @@ pub mod command;
 pub mod response;
 
 pub fn get_socket_path() -> io::Result<String> {
-    // TODO: store socket in a proper path
-    Ok("/tmp/userserversd.sock".to_string())
+    let mut base_path = "";
+    for path in vec!["/run", "/var/run", "/tmp"] {
+        if Path::new(path).exists() {
+            base_path = path;
+            break;
+        }
+    }
+    if base_path == "" {
+        return Err(io::Error::from(io::ErrorKind::NotFound));
+    }
+
+    let user_path = format!("{base_path}/user/{}", unistd::getuid().as_raw());
+    match fs::create_dir_all(&user_path) {
+        Ok(_) => Ok(format!("{user_path}/userserversd.sock")),
+        Err(_) => Ok(format!("{base_path}/userserversd.sock")),
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
