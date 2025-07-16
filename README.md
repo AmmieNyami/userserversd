@@ -1,6 +1,6 @@
 # userserversd
 
-A daemon for managing simple user services.
+A daemon for managing user services.
 
 Think of this as a very small init system for managing services on a user account.
 
