@@ -621,8 +621,10 @@ fn main() {
                                 start_command,
                                 stop_command,
                             } => {
-                                let formatted_start_command = truncate_string(&format!("{start_command:?}"));
-                                let formatted_stop_command = truncate_string(&format!("{stop_command:?}"));
+                                let formatted_start_command =
+                                    truncate_string(&format!("{start_command:?}"));
+                                let formatted_stop_command =
+                                    truncate_string(&format!("{stop_command:?}"));
 
                                 if formatted_start_command.len() > start_command_length {
                                     start_command_length = formatted_start_command.len();
@@ -673,7 +675,8 @@ fn main() {
                                 start_command,
                                 stop_command,
                             } => {
-                                let formatted_start_command = truncate_string(&format!("{start_command:?}"));
+                                let formatted_start_command =
+                                    truncate_string(&format!("{start_command:?}"));
                                 print!(
                                     "{formatted_start_command}{}  ",
                                     " ".repeat(
@@ -681,7 +684,8 @@ fn main() {
                                     )
                                 );
 
-                                let formatted_stop_command = truncate_string(&format!("{stop_command:?}"));
+                                let formatted_stop_command =
+                                    truncate_string(&format!("{stop_command:?}"));
                                 println!(
                                     "{formatted_stop_command}{}",
                                     " ".repeat(stop_command_length - formatted_stop_command.len())
