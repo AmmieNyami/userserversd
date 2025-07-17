@@ -104,6 +104,19 @@ fn usage(exit_code: i32) {
     exit(exit_code);
 }
 
+fn truncate_string(string: &String) -> String {
+    let max_chars = 85;
+    let truncated_length = max_chars.min(string.len());
+    let mut truncated_string = string[..truncated_length].to_string();
+
+    if truncated_length > 0 && truncated_length < string.len() {
+        truncated_string.pop();
+        truncated_string.push('|');
+    }
+
+    truncated_string
+}
+
 fn get_home_directory() -> String {
     match env::var("HOME") {
         Ok(path) => path,
@@ -573,13 +586,13 @@ fn main() {
 
                 for (_, group) in &groups {
                     for (service_name, service) in group {
-                        if service_name.len() > name_length {
+                        if truncate_string(service_name).len() > name_length {
                             name_length = service_name.len();
                         }
 
                         match &service.kind {
                             ipc::ServiceKind::Synchronous { command } => {
-                                let formatted_command = format!("{command:?}");
+                                let formatted_command = truncate_string(&format!("{command:?}"));
                                 if formatted_command.len() > start_command_length {
                                     start_command_length = formatted_command.len();
                                 }
@@ -589,8 +602,8 @@ fn main() {
                                 start_command,
                                 stop_command,
                             } => {
-                                let formatted_start_command = format!("{start_command:?}");
-                                let formatted_stop_command = format!("{stop_command:?}");
+                                let formatted_start_command = truncate_string(&format!("{start_command:?}"));
+                                let formatted_stop_command = truncate_string(&format!("{stop_command:?}"));
 
                                 if formatted_start_command.len() > start_command_length {
                                     start_command_length = formatted_start_command.len();
@@ -623,13 +636,14 @@ fn main() {
 
                     for (service_name, service) in group {
                         print!(
-                            "    {service_name}{}  ",
-                            " ".repeat(name_length - service_name.len())
+                            "    {service_name}{padding}  ",
+                            service_name = truncate_string(&service_name),
+                            padding = " ".repeat(name_length - service_name.len())
                         );
 
                         match service.kind {
                             ipc::ServiceKind::Synchronous { command } => {
-                                let formatted_command = format!("{command:?}");
+                                let formatted_command = truncate_string(&format!("{command:?}"));
                                 println!(
                                     "{formatted_command}{}  ",
                                     " ".repeat(start_command_length - formatted_command.len())
@@ -640,7 +654,7 @@ fn main() {
                                 start_command,
                                 stop_command,
                             } => {
-                                let formatted_start_command = format!("{start_command:?}");
+                                let formatted_start_command = truncate_string(&format!("{start_command:?}"));
                                 print!(
                                     "{formatted_start_command}{}  ",
                                     " ".repeat(
@@ -648,7 +662,7 @@ fn main() {
                                     )
                                 );
 
-                                let formatted_stop_command = format!("{stop_command:?}");
+                                let formatted_stop_command = truncate_string(&format!("{stop_command:?}"));
                                 println!(
                                     "{formatted_stop_command}{}",
                                     " ".repeat(stop_command_length - formatted_stop_command.len())
