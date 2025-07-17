@@ -529,15 +529,34 @@ fn main() {
             );
 
             if let ResponseKind::ServiceStatus {
-                service: _,
+                service,
                 running,
                 logs,
             } = response.kind
             {
                 println!("Service status:");
                 println!();
-                println!("       Name: {service_name}");
-                println!("    Running: {running:?}");
+                println!("                 Name: {service_name}");
+                println!("              Running: {running:?}");
+                println!("    Working directory: {}", service.working_directory);
+                println!("          Environment: {:?}", service.environment);
+                if let Some(group) = service.group {
+                    println!("                Group: {group}")
+                } else {
+                    println!("                Group: none")
+                }
+                match service.kind {
+                    ipc::ServiceKind::Synchronous { command } => {
+                        println!("              Command: {command:?}")
+                    }
+                    ipc::ServiceKind::Asynchronous {
+                        start_command,
+                        stop_command,
+                    } => {
+                        println!("        Start command: {start_command:?}");
+                        println!("         Stop command: {stop_command:?}");
+                    }
+                }
                 println!();
                 println!("--- Beginning of Logs ---");
                 println!("{logs}");
