@@ -103,7 +103,7 @@ impl Command {
 
         // Subcommands
         if !self.subcommands.is_empty() {
-            output.push_str(&format!("\n{indent_str}SUBCOMMANDS:\n"));
+            output.push_str(&format!("\n{indent_str}SUBCOMMANDs:\n"));
             for (i, subcommand) in self.subcommands.iter().enumerate() {
                 if i != 0 {
                     output.push('\n');
