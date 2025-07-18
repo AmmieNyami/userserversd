@@ -96,7 +96,7 @@ impl<W: fmt::Write + Send + 'static> Command<W> {
         let child_pid = unistd::Pid::from_raw(child.id() as i32);
 
         'kill_attempt: for _ in 0..5 {
-            signal::kill(child_pid, Signal::SIGINT)?;
+            signal::kill(child_pid, Signal::SIGTERM)?;
 
             let timeout = Duration::from_secs(30);
             let deadline = Instant::now() + timeout;
