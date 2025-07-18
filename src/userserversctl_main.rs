@@ -92,7 +92,10 @@ fn cli() -> flag::Command {
 
     let mut add_command = flag::Command::new(Some("add"), "Adds a new service.");
 
-    let mut sync_subcommand = flag::Command::new(Some("sync"), "Adds a synchronous service with the specified name that runs the specified command. The command must be a JSON array, with each item being a command line argument.");
+    let mut sync_subcommand = flag::Command::new(
+        Some("sync"),
+        "Adds a synchronous service with the specified name that runs the specified command. The command must be a JSON array, with each item being a command line argument.",
+    );
     sync_subcommand.add_positional_arg("service name", "The name of the service.");
     sync_subcommand.add_positional_arg("command", "The command that the service will run.");
     sync_subcommand.add_flag(
@@ -107,7 +110,10 @@ fn cli() -> flag::Command {
         "Makes the service part of the group specified in the provided argument.",
     );
 
-    let mut async_subcommand = flag::Command::new(Some("async"), "Adds an asynchronous service with the specified name that gets started with the specified start command and stopped with the specified stop command. The commands must be JSON arrays, with each item being a command line argument.");
+    let mut async_subcommand = flag::Command::new(
+        Some("async"),
+        "Adds an asynchronous service with the specified name that gets started with the specified start command and stopped with the specified stop command. The commands must be JSON arrays, with each item being a command line argument.",
+    );
     async_subcommand.add_positional_arg("service name", "The name of the service.");
     async_subcommand.add_positional_arg("start command", "The command that starts the service.");
     async_subcommand.add_positional_arg("stop command", "The command that stops the service.");

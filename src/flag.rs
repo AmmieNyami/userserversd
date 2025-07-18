@@ -156,7 +156,7 @@ impl Parser {
                             "no {arg_name} was provided to the {name} subcommand"
                         )),
                         None => Err(format!("no {arg_name} was provided")),
-                    }
+                    };
                 }
             };
 
@@ -205,7 +205,7 @@ impl Parser {
                             "no subcommand was provided to the {name} subcommand"
                         )),
                         None => Err("no subcommand was provided".to_string()),
-                    }
+                    };
                 }
             };
 
