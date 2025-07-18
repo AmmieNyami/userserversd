@@ -118,6 +118,14 @@ impl<W: fmt::Write + Send + 'static> Command<W> {
         let mut child = self.child.lock().unwrap();
         child.wait()
     }
+
+    fn is_running(&self) -> bool {
+        let mut child = self.child.lock().unwrap();
+        if let Ok(Some(_)) = child.try_wait() {
+            return false;
+        }
+        true
+    }
 }
 
 pub enum ServiceError {
@@ -322,14 +330,13 @@ impl Service {
     }
 
     fn stop_synchronous(&mut self) -> Result<(), ServiceError> {
-        let child = match &self.child {
-            Some(child) => child,
-            None => return Err(ServiceError::ServiceNotRunning),
-        };
+        if !self.is_running() {
+            return Err(ServiceError::ServiceNotRunning);
+        }
+        let child = self.child.as_ref().unwrap();
         if let Err(err) = child.stop() {
             return Err(ServiceError::IOError(err));
         }
-        self.child = None;
         Ok(())
     }
 
@@ -377,7 +384,13 @@ impl Service {
 
     pub fn is_running(&self) -> bool {
         match self.kind {
-            ServiceKind::Synchronous { .. } => self.child.is_some(),
+            ServiceKind::Synchronous { .. } => {
+                if let Some(child) = &self.child {
+                    child.is_running()
+                } else {
+                    false
+                }
+            }
             ServiceKind::Asynchronous { .. } => self.async_running,
         }
     }
