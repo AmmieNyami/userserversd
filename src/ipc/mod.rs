@@ -35,7 +35,7 @@ pub mod response;
 
 pub fn get_socket_path() -> io::Result<String> {
     let mut base_path = "";
-    for path in vec!["/run", "/var/run", "/tmp"] {
+    for path in &["/run", "/var/run", "/tmp"] {
         if Path::new(path).exists() {
             base_path = path;
             break;
