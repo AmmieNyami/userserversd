@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 use std::fs;
 use std::io::{self, BufRead, BufReader, Read, Write};
-use std::path::Path;
 
 use nix::unistd;
 
@@ -34,22 +33,12 @@ pub mod command;
 pub mod response;
 
 pub fn get_socket_path() -> io::Result<String> {
-    let mut base_path = "";
-    for path in &["/run", "/var/run", "/tmp"] {
-        if Path::new(path).exists() {
-            base_path = path;
-            break;
-        }
-    }
-    if base_path == "" {
-        return Err(io::Error::from(io::ErrorKind::NotFound));
-    }
+    let user_id = unistd::getuid().as_raw();
+    let user_socket_path = format!("/run/user/{}/userserversd.sock", user_id);
 
-    let user_path = format!("{base_path}/user/{}", unistd::getuid().as_raw());
-    match fs::create_dir_all(&user_path) {
-        Ok(_) => Ok(format!("{user_path}/userserversd.sock")),
-        Err(_) => Ok(format!("{base_path}/userserversd.sock")),
-    }
+    fs::create_dir_all(format!("/run/user/{}", user_id))?;
+
+    Ok(user_socket_path)
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
