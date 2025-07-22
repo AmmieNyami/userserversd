@@ -1,5 +1,6 @@
 use std::fs;
 use std::os::unix::net::{UnixListener, UnixStream};
+use std::path::Path;
 use std::process::exit;
 use std::sync::mpsc;
 use std::sync::{Arc, Mutex};
@@ -98,6 +99,15 @@ fn server(
     service_manager: Arc<Mutex<ServiceManager>>,
     exit_code_tx: Arc<Mutex<mpsc::Sender<i32>>>,
 ) {
+    if Path::new(&socket_path).exists() {
+        println!("Socket file already exists. Trying to remove it...");
+        fs::remove_file(&socket_path).unwrap_or_else(|err| {
+            eprintln!("ERROR: failed to remove socket file: {err}");
+            exit(1);
+        });
+        println!("Socket file removed!");
+    }
+
     let listener = UnixListener::bind(&socket_path).unwrap_or_else(|err| {
         eprintln!("ERROR: failed to bind socket: {err}");
         exit_code_tx.lock().unwrap().send(1).unwrap();
